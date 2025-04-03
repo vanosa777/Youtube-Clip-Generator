@@ -1,4 +1,3 @@
-# Youtube-Clip-Generator
 <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
 <audio id="clickSound" src="https://freesound.org/data/previews/341/341695_6261194-lq.mp3"></audio>
 
