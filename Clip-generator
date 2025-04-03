@@ -1,0 +1,156 @@
+<link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+<audio id="clickSound" src="https://freesound.org/data/previews/341/341695_6261194-lq.mp3"></audio>
+
+<div class="container">
+  <h1 class="title">YouTube Clip Generator</h1>
+
+  <input type="text" id="videoURL" placeholder="Introduce linkul YouTube">
+  <button class="btn" onclick="processVideo()">Generează Clipul</button>
+
+  <div id="playerContainer">
+    <iframe id="videoPlayer" width="640" height="360" frameborder="0" allowfullscreen></iframe>
+  </div>
+</div>
+
+<canvas id="background"></canvas>
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: #0f0f0f;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+}
+
+canvas#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  padding-top: 80px;
+}
+
+.title {
+  font-size: 40px;
+  text-shadow: 0 0 15px #00faff;
+}
+
+input[type="text"] {
+  padding: 12px;
+  width: 300px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px #00faff;
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.btn {
+  background: linear-gradient(45deg, #00faff, #2196f3);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00faff;
+  transition: all 0.4s ease;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #00faff;
+}
+
+#playerContainer {
+  margin-top: 30px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+#playerContainer.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+    function extractVideoID(url) {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/.*|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+function processVideo() {
+  const url = document.getElementById("videoURL").value;
+  const videoID = extractVideoID(url);
+
+  const sound = document.getElementById("clickSound");
+  sound.play();
+
+  if (videoID) {
+    const startTime = 30;
+    const duration = 30;
+    const clipURL = `https://www.youtube.com/embed/${videoID}?start=${startTime}&end=${startTime + duration}&autoplay=1`;
+
+    document.getElementById("videoPlayer").src = clipURL;
+
+    const container = document.getElementById("playerContainer");
+    container.classList.add("show");
+  } else {
+    alert("Link YouTube invalid!");
+  }
+}
+const canvas = document.getElementById("background");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+for (let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 1,
+    d: Math.random() * 5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#00faff";
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = "#00faff";
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+    ctx.fill();
+  });
+  update();
+}
+
+function update() {
+  particles.forEach(p => {
+    p.y += Math.cos(p.d) + 0.5;
+    p.x += Math.sin(p.d);
+
+    if (p.x > canvas.width || p.x < 0 || p.y > canvas.height) {
+      p.x = Math.random() * canvas.width;
+      p.y = -10;
+    }
+  });
+}
+
+setInterval(draw, 33);
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
